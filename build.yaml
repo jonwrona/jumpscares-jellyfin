@@ -1,0 +1,17 @@
+---
+name: "Jump Scare Markers"
+guid: "4a2f8b1c-6d3e-4f9a-b5c7-8e0d2f3a4b5c"
+version: "1.0.0.0"
+targetAbi: "10.10.0.0"
+framework: "net8.0"
+overview: "Add visual timeline markers for jump scares in horror movies and TV shows"
+description: >
+  Display markers on video timelines showing when jump scares occur during horror movie/TV show playback.
+  Helps viewers who are sensitive to sudden scares by providing visual warnings on the progress bar.
+  Supports data import from notscare.me and manual entry.
+category: "Metadata"
+owner: "jumpscares-jellyfin"
+artifacts:
+- "Jellyfin.Plugin.JumpScareMarkers.dll"
+changelog: >
+  Initial release v1.0.0
