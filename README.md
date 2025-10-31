@@ -65,6 +65,10 @@ Jump scares are stored with the following information:
 - **Description**: Text description of the scare
 - **Source**: Origin of the data (notscare.me, manual, import)
 
+### Example Files
+
+See the [examples/](examples/) directory for sample CSV and JSON import files using real data from "Weapons (2025)".
+
 ### Example JSON Format
 
 ```json

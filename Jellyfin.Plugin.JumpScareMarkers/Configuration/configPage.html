@@ -42,16 +42,102 @@
 
                     <div>
                         <button is="emby-button" type="submit" class="raised button-submit block emby-button">
-                            <span>Save</span>
+                            <span>Save Configuration</span>
                         </button>
                     </div>
                 </form>
+
+                <h2 style="margin-top: 2em;">Import Jump Scare Data</h2>
+                <p>Upload a CSV file containing jump scare timestamps.</p>
+
+                <div class="inputContainer">
+                    <label class="inputLabel inputLabelUnfocused" for="csvFileInput">CSV File</label>
+                    <input type="file" id="csvFileInput" accept=".csv" style="max-width: 400px;" />
+                    <div class="fieldDescription">Expected format: ItemName,IMDb,TMDb,Timestamp,Intensity,Description,Type</div>
+                </div>
+
+                <div style="margin-top: 1em;">
+                    <button is="emby-button" id="importButton" class="raised button-submit emby-button">
+                        <span>Import CSV</span>
+                    </button>
+                    <button is="emby-button" id="clearButton" class="raised emby-button" style="margin-left: 1em;">
+                        <span>Clear All Data</span>
+                    </button>
+                </div>
+
+                <div id="importResult" style="margin-top: 1em;"></div>
+
+                <h2 style="margin-top: 2em;">Database Statistics</h2>
+                <div id="statistics" style="padding: 1em; background: rgba(255,255,255,0.05); border-radius: 4px;">
+                    <p>Loading statistics...</p>
+                </div>
+
+                <h2 style="margin-top: 2em;">Current Jump Scares</h2>
+                <div id="jumpScareList" style="max-height: 400px; overflow-y: auto;">
+                    <p>Loading jump scares...</p>
+                </div>
             </div>
         </div>
         <script type="text/javascript">
             var JumpScareMarkersConfig = {
                 pluginUniqueId: '4a2f8b1c-6d3e-4f9a-b5c7-8e0d2f3a4b5c'
             };
+
+            // Load statistics
+            function loadStatistics() {
+                fetch(ApiClient.getUrl('/JumpScareMarkers/Statistics'))
+                    .then(response => response.json())
+                    .then(stats => {
+                        var html = '<p><strong>Total Jump Scares:</strong> ' + stats.TotalScares + '</p>';
+                        html += '<p><strong>Items with Scares:</strong> ' + stats.TotalItems + '</p>';
+                        html += '<p><strong>Major Scares:</strong> ' + stats.MajorScares + '</p>';
+                        html += '<p><strong>Minor Scares:</strong> ' + stats.MinorScares + '</p>';
+                        document.querySelector('#statistics').innerHTML = html;
+                    })
+                    .catch(error => {
+                        document.querySelector('#statistics').innerHTML = '<p style="color: red;">Error loading statistics</p>';
+                    });
+            }
+
+            // Load jump scare list
+            function loadJumpScares() {
+                fetch(ApiClient.getUrl('/JumpScareMarkers/All'))
+                    .then(response => response.json())
+                    .then(scares => {
+                        if (scares.length === 0) {
+                            document.querySelector('#jumpScareList').innerHTML = '<p>No jump scares imported yet.</p>';
+                            return;
+                        }
+
+                        var html = '<table class="tblConnections" style="width: 100%;">';
+                        html += '<thead><tr><th>Item</th><th>Time</th><th>Intensity</th><th>Type</th><th>Description</th></tr></thead>';
+                        html += '<tbody>';
+
+                        scares.forEach(function(scare) {
+                            var seconds = scare.TimestampTicks / 10000000;
+                            var hours = Math.floor(seconds / 3600);
+                            var minutes = Math.floor((seconds % 3600) / 60);
+                            var secs = Math.floor(seconds % 60);
+                            var timeStr = hours > 0 ?
+                                hours + ':' + String(minutes).padStart(2, '0') + ':' + String(secs).padStart(2, '0') :
+                                minutes + ':' + String(secs).padStart(2, '0');
+
+                            html += '<tr>';
+                            html += '<td>' + (scare.ItemName || 'Unknown') + '</td>';
+                            html += '<td>' + timeStr + '</td>';
+                            html += '<td>' + (scare.Intensity || 'N/A') + '</td>';
+                            html += '<td>' + (scare.Type || 'N/A') + '</td>';
+                            html += '<td>' + (scare.Description || '') + '</td>';
+                            html += '</tr>';
+                        });
+
+                        html += '</tbody></table>';
+                        document.querySelector('#jumpScareList').innerHTML = html;
+                    })
+                    .catch(error => {
+                        document.querySelector('#jumpScareList').innerHTML = '<p style="color: red;">Error loading jump scares</p>';
+                    });
+            }
 
             document.querySelector('#JumpScareMarkersConfigPage')
                 .addEventListener('pageshow', function() {
@@ -62,6 +148,10 @@
                         document.querySelector('#NotScareApiUrl').value = config.NotScareApiUrl;
                         document.querySelector('#EnableNotScareSync').checked = config.EnableNotScareSync;
                         Dashboard.hideLoadingMsg();
+
+                        // Load data
+                        loadStatistics();
+                        loadJumpScares();
                     });
                 });
 
@@ -80,6 +170,82 @@
 
                 e.preventDefault();
                 return false;
+            });
+
+            // Import CSV handler
+            document.querySelector('#importButton').addEventListener('click', async function() {
+                var fileInput = document.querySelector('#csvFileInput');
+                var file = fileInput.files[0];
+
+                if (!file) {
+                    Dashboard.alert('Please select a CSV file to import');
+                    return;
+                }
+
+                var formData = new FormData();
+                formData.append('file', file);
+
+                try {
+                    Dashboard.showLoadingMsg();
+
+                    var response = await fetch(ApiClient.getUrl('/JumpScareMarkers/Import'), {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    var result = await response.json();
+
+                    var resultHtml = result.Success ?
+                        '<p style="color: #52b54b; font-weight: bold;">' + result.Message + '</p>' +
+                        '<p>Total Rows: ' + result.TotalRows + '</p>' +
+                        '<p>Imported: ' + result.ImportedCount + '</p>' +
+                        '<p>Skipped: ' + result.SkippedCount + '</p>' :
+                        '<p style="color: #cc3333; font-weight: bold;">' + result.Message + '</p>';
+
+                    document.querySelector('#importResult').innerHTML = resultHtml;
+
+                    if (result.Success) {
+                        // Reload data
+                        loadStatistics();
+                        loadJumpScares();
+                        fileInput.value = ''; // Clear file input
+                    }
+
+                    Dashboard.hideLoadingMsg();
+                } catch (error) {
+                    Dashboard.hideLoadingMsg();
+                    Dashboard.alert('Import failed: ' + error.message);
+                }
+            });
+
+            // Clear all data handler
+            document.querySelector('#clearButton').addEventListener('click', function() {
+                Dashboard.confirm('Are you sure you want to clear all jump scare data? This cannot be undone.', 'Confirm Clear', async function(confirmed) {
+                    if (!confirmed) return;
+
+                    try {
+                        Dashboard.showLoadingMsg();
+
+                        var response = await fetch(ApiClient.getUrl('/JumpScareMarkers/All'), {
+                            method: 'DELETE'
+                        });
+
+                        var result = await response.json();
+
+                        if (result.success) {
+                            Dashboard.alert(result.message);
+                            loadStatistics();
+                            loadJumpScares();
+                        } else {
+                            Dashboard.alert('Failed to clear data: ' + result.message);
+                        }
+
+                        Dashboard.hideLoadingMsg();
+                    } catch (error) {
+                        Dashboard.hideLoadingMsg();
+                        Dashboard.alert('Error: ' + error.message);
+                    }
+                });
             });
         </script>
     </div>

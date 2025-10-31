@@ -1,0 +1,115 @@
+{
+  "version": "1.0",
+  "exported": "2025-10-31T12:00:00Z",
+  "jumpScares": [
+    {
+      "itemName": "Weapons (2025)",
+      "imdbId": "tt26581740",
+      "tmdbId": "1078605",
+      "scares": [
+        {
+          "timestamp": "00:11:51",
+          "intensity": "Minor",
+          "description": "There is a sudden knock at the door behind Justine.",
+          "type": "Audio"
+        },
+        {
+          "timestamp": "00:23:55",
+          "intensity": "Minor",
+          "description": "There is a sudden audio scare as Justine notices Alex's parents sitting on the couch",
+          "type": "Audio"
+        },
+        {
+          "timestamp": "00:25:08",
+          "intensity": "Minor",
+          "description": "Woman grabs Justine from behind and throws her to the ground",
+          "type": "Combined"
+        },
+        {
+          "timestamp": "00:27:38",
+          "intensity": "Major",
+          "description": "Justine looks up to see a woman coming out of her ceiling.",
+          "type": "Visual"
+        },
+        {
+          "timestamp": "00:41:10",
+          "intensity": "Major",
+          "description": "Matthew's face is replaced with a horrifying twisted visage.",
+          "type": "Visual"
+        },
+        {
+          "timestamp": "01:04:00",
+          "intensity": "Minor",
+          "description": "James notices Alex's parents in the reflection of the TV. Accompanied by audio scare.",
+          "type": "Combined"
+        },
+        {
+          "timestamp": "01:05:51",
+          "intensity": "Minor",
+          "description": "The children all spin suddenly to look at James",
+          "type": "Visual"
+        },
+        {
+          "timestamp": "01:06:20",
+          "intensity": "Minor",
+          "description": "After exiting the basement, a well-telegraphed scare reveals figures approaching from the other room, accompanied by a stinger",
+          "type": "Combined"
+        },
+        {
+          "timestamp": "01:20:19",
+          "intensity": "Minor",
+          "description": "Marcus attacks the man and spits on him and kills him",
+          "type": "Combined"
+        },
+        {
+          "timestamp": "01:31:21",
+          "intensity": "Minor",
+          "description": "During a quiet moment, the person in the doorway is startled upon realizing the person in bed is looking at them.",
+          "type": "Visual"
+        },
+        {
+          "timestamp": "01:46:22",
+          "intensity": "Minor",
+          "description": "The woman standing at the door looks over, accompanied by a sound effect",
+          "type": "Combined"
+        },
+        {
+          "timestamp": "01:49:09",
+          "intensity": "Minor",
+          "description": "Alex steps to one side, revealing James standing behind him. Accompanied by audio scare.",
+          "type": "Combined"
+        },
+        {
+          "timestamp": "01:51:49",
+          "intensity": "Major",
+          "description": "As Justine steps on the salt, someone comes screaming out of the darkness behind her.",
+          "type": "Combined"
+        },
+        {
+          "timestamp": "01:54:10",
+          "intensity": "Minor",
+          "description": "After a quiet moment, there's a cut to loud banging on a doorway and yelling that may startle sensitive viewers.",
+          "type": "Audio"
+        },
+        {
+          "timestamp": "01:54:19",
+          "intensity": "Minor",
+          "description": "After exiting the bathroom, a figure appears in the hallway doorway, accompanied by a sound effect that may startle some viewers.",
+          "type": "Combined"
+        },
+        {
+          "timestamp": "01:55:15",
+          "intensity": "Minor",
+          "description": "Loud bang through the door",
+          "type": "Audio"
+        },
+        {
+          "timestamp": "01:56:17",
+          "intensity": "Minor",
+          "description": "Gladys comes screaming out of the darkness.",
+          "type": "Combined"
+        }
+      ]
+    }
+  ]
+}
