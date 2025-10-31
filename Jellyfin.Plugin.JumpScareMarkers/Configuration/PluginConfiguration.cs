@@ -37,7 +37,9 @@ public class PluginConfiguration : BasePluginConfiguration
     /// <summary>
     /// Gets or sets the list of jump scare data entries.
     /// </summary>
+#pragma warning disable CA2227, CA1002 // Configuration needs mutable collection for serialization
     public List<JumpScareData> JumpScares { get; set; }
+#pragma warning restore CA2227, CA1002
 
     /// <summary>
     /// Gets or sets the notscare.me API URL.

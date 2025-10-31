@@ -72,7 +72,7 @@ public class JumpScareController : ControllerBase
             string csvContent;
             using (var reader = new StreamReader(file.OpenReadStream()))
             {
-                csvContent = await reader.ReadToEndAsync();
+                csvContent = await reader.ReadToEndAsync().ConfigureAwait(false);
             }
 
             // Import

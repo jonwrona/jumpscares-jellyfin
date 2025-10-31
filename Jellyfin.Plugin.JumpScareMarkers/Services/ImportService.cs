@@ -45,7 +45,7 @@ public class ImportService
             if (importedScares.Count == 0)
             {
                 result.Message = "No valid jump scares found in CSV";
-                _logger.LogWarning(result.Message);
+                _logger.LogWarning("No valid jump scares found in CSV");
                 return result;
             }
 
@@ -55,7 +55,7 @@ public class ImportService
             {
                 result.Success = false;
                 result.Message = "Plugin instance not available";
-                _logger.LogError(result.Message);
+                _logger.LogError("Plugin instance not available during import");
                 return result;
             }
 
@@ -75,8 +75,10 @@ public class ImportService
                 if (existingKeys.Contains(key))
                 {
                     skippedDuplicates++;
-                    _logger.LogDebug("Skipping duplicate: ItemId={ItemId}, Timestamp={Timestamp}",
-                        scare.ItemId, TimeHelpers.TicksToSeconds(scare.TimestampTicks));
+                    _logger.LogDebug(
+                        "Skipping duplicate: ItemId={ItemId}, Timestamp={Timestamp}",
+                        scare.ItemId,
+                        TimeHelpers.TicksToSeconds(scare.TimestampTicks));
                 }
                 else
                 {
@@ -96,7 +98,7 @@ public class ImportService
             result.SkippedCount = skippedDuplicates;
             result.Message = $"Successfully imported {newScares.Count} jump scares, skipped {skippedDuplicates} duplicates";
 
-            _logger.LogInformation(result.Message);
+            _logger.LogInformation("Successfully imported {ImportedCount} jump scares, skipped {SkippedCount} duplicates", newScares.Count, skippedDuplicates);
             _logger.LogInformation("Total jump scares in database: {Total}", config.JumpScares.Count);
         }
         catch (Exception ex)
@@ -168,6 +170,7 @@ public class ImportService
 /// <summary>
 /// Result of an import operation.
 /// </summary>
+#pragma warning disable SA1402 // Simple DTOs in same file
 public class ImportResult
 {
     /// <summary>
@@ -200,6 +203,7 @@ public class ImportResult
 /// Statistics about the jump scare database.
 /// </summary>
 public class ImportStatistics
+#pragma warning restore SA1402
 {
     /// <summary>
     /// Gets or sets the total number of jump scares.

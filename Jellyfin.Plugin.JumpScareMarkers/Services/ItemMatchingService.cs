@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using MediaBrowser.Controller.Entities;
 using MediaBrowser.Controller.Library;
+using MediaBrowser.Model.Entities;
 using Microsoft.Extensions.Logging;
 
 namespace Jellyfin.Plugin.JumpScareMarkers.Services;
@@ -55,8 +56,11 @@ public class ItemMatchingService
 
         if (exactMatch != null)
         {
-            _logger.LogInformation("Found exact match for '{ItemName}': {ItemId} - {MatchedName}",
-                itemName, exactMatch.Id, exactMatch.Name);
+            _logger.LogInformation(
+                "Found exact match for '{ItemName}': {ItemId} - {MatchedName}",
+                itemName,
+                exactMatch.Id,
+                exactMatch.Name);
             return exactMatch.Id;
         }
 
@@ -66,8 +70,11 @@ public class ItemMatchingService
 
         if (containsMatch != null)
         {
-            _logger.LogInformation("Found partial match for '{ItemName}': {ItemId} - {MatchedName}",
-                itemName, containsMatch.Id, containsMatch.Name);
+            _logger.LogInformation(
+                "Found partial match for '{ItemName}': {ItemId} - {MatchedName}",
+                itemName,
+                containsMatch.Id,
+                containsMatch.Name);
             return containsMatch.Id;
         }
 
@@ -87,8 +94,11 @@ public class ItemMatchingService
 
                 if (yearMatch != null)
                 {
-                    _logger.LogInformation("Found match by title and year for '{ItemName}': {ItemId} - {MatchedName}",
-                        itemName, yearMatch.Id, yearMatch.Name);
+                    _logger.LogInformation(
+                        "Found match by title and year for '{ItemName}': {ItemId} - {MatchedName}",
+                        itemName,
+                        yearMatch.Id,
+                        yearMatch.Name);
                     return yearMatch.Id;
                 }
 
@@ -98,8 +108,12 @@ public class ItemMatchingService
 
                 if (titleMatch != null)
                 {
-                    _logger.LogWarning("Found title match but year mismatch for '{ItemName}': {ItemId} - {MatchedName} (Year: {Year})",
-                        itemName, titleMatch.Id, titleMatch.Name, titleMatch.ProductionYear);
+                    _logger.LogWarning(
+                        "Found title match but year mismatch for '{ItemName}': {ItemId} - {MatchedName} (Year: {Year})",
+                        itemName,
+                        titleMatch.Id,
+                        titleMatch.Name,
+                        titleMatch.ProductionYear);
                     return titleMatch.Id;
                 }
             }
@@ -137,12 +151,15 @@ public class ItemMatchingService
         if (!string.IsNullOrWhiteSpace(imdbId))
         {
             var imdbMatch = items.FirstOrDefault(i =>
-                i.GetProviderId(MediaBrowser.Model.Entities.MetadataProvider.Imdb) == imdbId);
+                i.GetProviderId(MetadataProvider.Imdb) == imdbId);
 
             if (imdbMatch != null)
             {
-                _logger.LogInformation("Found match by IMDb ID '{ImdbId}': {ItemId} - {ItemName}",
-                    imdbId, imdbMatch.Id, imdbMatch.Name);
+                _logger.LogInformation(
+                    "Found match by IMDb ID '{ImdbId}': {ItemId} - {ItemName}",
+                    imdbId,
+                    imdbMatch.Id,
+                    imdbMatch.Name);
                 return imdbMatch.Id;
             }
         }
@@ -151,12 +168,15 @@ public class ItemMatchingService
         if (!string.IsNullOrWhiteSpace(tmdbId))
         {
             var tmdbMatch = items.FirstOrDefault(i =>
-                i.GetProviderId(MediaBrowser.Model.Entities.MetadataProvider.Tmdb) == tmdbId);
+                i.GetProviderId(MetadataProvider.Tmdb) == tmdbId);
 
             if (tmdbMatch != null)
             {
-                _logger.LogInformation("Found match by TMDb ID '{TmdbId}': {ItemId} - {ItemName}",
-                    tmdbId, tmdbMatch.Id, tmdbMatch.Name);
+                _logger.LogInformation(
+                    "Found match by TMDb ID '{TmdbId}': {ItemId} - {ItemName}",
+                    tmdbId,
+                    tmdbMatch.Id,
+                    tmdbMatch.Name);
                 return tmdbMatch.Id;
             }
         }

@@ -13,8 +13,8 @@ A Jellyfin plugin that displays visual timeline markers for jump scares in horro
 
 ## Requirements
 
-- **Jellyfin**: Version 10.10.0 or higher (required for Media Segments API)
-- **.NET**: 8.0 SDK for building
+- **Jellyfin**: Version 10.11.0 or higher (required for Media Segments API)
+- **.NET**: 9.0 SDK for building
 
 ## Installation
 
@@ -35,10 +35,10 @@ dotnet build Jellyfin.Plugin.JumpScareMarkers.sln -c Release
 
 # Copy to Jellyfin plugins directory
 # Linux:
-sudo cp Jellyfin.Plugin.JumpScareMarkers/bin/Release/net8.0/Jellyfin.Plugin.JumpScareMarkers.dll /var/lib/jellyfin/plugins/JumpScareMarkers/
+sudo cp Jellyfin.Plugin.JumpScareMarkers/bin/Release/net9.0/Jellyfin.Plugin.JumpScareMarkers.dll /var/lib/jellyfin/plugins/JumpScareMarkers/
 
 # Windows (adjust path as needed):
-copy Jellyfin.Plugin.JumpScareMarkers\bin\Release\net8.0\Jellyfin.Plugin.JumpScareMarkers.dll %AppData%\Jellyfin\plugins\JumpScareMarkers\
+copy Jellyfin.Plugin.JumpScareMarkers\bin\Release\net9.0\Jellyfin.Plugin.JumpScareMarkers.dll %AppData%\Jellyfin\plugins\JumpScareMarkers\
 
 # Restart Jellyfin
 sudo systemctl restart jellyfin  # Linux

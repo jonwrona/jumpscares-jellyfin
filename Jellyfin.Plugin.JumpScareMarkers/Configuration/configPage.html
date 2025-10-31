@@ -85,8 +85,17 @@
 
             // Load statistics
             function loadStatistics() {
-                fetch(ApiClient.getUrl('/JumpScareMarkers/Statistics'))
-                    .then(response => response.json())
+                var url = ApiClient.getUrl('/JumpScareMarkers/Statistics');
+                var accessToken = ApiClient.accessToken();
+                if (accessToken) {
+                    url += (url.indexOf('?') === -1 ? '?' : '&') + 'api_key=' + accessToken;
+                }
+
+                fetch(url)
+                    .then(response => {
+                        if (!response.ok) throw new Error('HTTP ' + response.status);
+                        return response.json();
+                    })
                     .then(stats => {
                         var html = '<p><strong>Total Jump Scares:</strong> ' + stats.TotalScares + '</p>';
                         html += '<p><strong>Items with Scares:</strong> ' + stats.TotalItems + '</p>';
@@ -101,8 +110,17 @@
 
             // Load jump scare list
             function loadJumpScares() {
-                fetch(ApiClient.getUrl('/JumpScareMarkers/All'))
-                    .then(response => response.json())
+                var url = ApiClient.getUrl('/JumpScareMarkers/All');
+                var accessToken = ApiClient.accessToken();
+                if (accessToken) {
+                    url += (url.indexOf('?') === -1 ? '?' : '&') + 'api_key=' + accessToken;
+                }
+
+                fetch(url)
+                    .then(response => {
+                        if (!response.ok) throw new Error('HTTP ' + response.status);
+                        return response.json();
+                    })
                     .then(scares => {
                         if (scares.length === 0) {
                             document.querySelector('#jumpScareList').innerHTML = '<p>No jump scares imported yet.</p>';
@@ -188,10 +206,23 @@
                 try {
                     Dashboard.showLoadingMsg();
 
-                    var response = await fetch(ApiClient.getUrl('/JumpScareMarkers/Import'), {
+                    // Build request with authentication token
+                    var url = ApiClient.getUrl('/JumpScareMarkers/Import');
+                    var accessToken = ApiClient.accessToken();
+
+                    if (accessToken) {
+                        url += (url.indexOf('?') === -1 ? '?' : '&') + 'api_key=' + accessToken;
+                    }
+
+                    var response = await fetch(url, {
                         method: 'POST',
                         body: formData
                     });
+
+                    if (!response.ok) {
+                        var errorText = await response.text();
+                        throw new Error('HTTP ' + response.status + ': ' + (errorText || response.statusText));
+                    }
 
                     var result = await response.json();
 
@@ -226,9 +257,19 @@
                     try {
                         Dashboard.showLoadingMsg();
 
-                        var response = await fetch(ApiClient.getUrl('/JumpScareMarkers/All'), {
+                        var url = ApiClient.getUrl('/JumpScareMarkers/All');
+                        var accessToken = ApiClient.accessToken();
+                        if (accessToken) {
+                            url += (url.indexOf('?') === -1 ? '?' : '&') + 'api_key=' + accessToken;
+                        }
+
+                        var response = await fetch(url, {
                             method: 'DELETE'
                         });
+
+                        if (!response.ok) {
+                            throw new Error('HTTP ' + response.status + ': ' + response.statusText);
+                        }
 
                         var result = await response.json();
 

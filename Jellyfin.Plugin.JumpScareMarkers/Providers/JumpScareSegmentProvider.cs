@@ -5,6 +5,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Jellyfin.Plugin.JumpScareMarkers.Models;
 using MediaBrowser.Controller.Entities;
+using MediaBrowser.Controller.MediaSegments;
+using MediaBrowser.Model;
 using MediaBrowser.Model.MediaSegments;
 using Microsoft.Extensions.Logging;
 
@@ -121,9 +123,7 @@ public class JumpScareSegmentProvider : IMediaSegmentProvider
 
         return new MediaSegmentDto
         {
-            Id = jumpScare.Id,
             ItemId = jumpScare.ItemId,
-            Type = MediaSegmentType.Unknown, // Use Unknown for custom segment types
             StartTicks = startTicks,
             EndTicks = endTicks
         };

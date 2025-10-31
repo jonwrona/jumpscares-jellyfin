@@ -13,6 +13,7 @@ namespace Jellyfin.Plugin.JumpScareMarkers.Services;
 /// </summary>
 public class CsvImporter
 {
+    private static readonly char[] LineSeparators = new[] { '\r', '\n' };
     private readonly ItemMatchingService _itemMatchingService;
     private readonly ILogger<CsvImporter> _logger;
 
@@ -32,7 +33,9 @@ public class CsvImporter
     /// </summary>
     /// <param name="csvContent">The CSV content.</param>
     /// <returns>A list of imported JumpScareData objects.</returns>
+#pragma warning disable CA1002 // Return type must match internal collection for processing
     public List<JumpScareData> ImportFromCsv(string csvContent)
+#pragma warning restore CA1002
     {
         if (string.IsNullOrWhiteSpace(csvContent))
         {
@@ -40,7 +43,7 @@ public class CsvImporter
         }
 
         var jumpScares = new List<JumpScareData>();
-        var lines = csvContent.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+        var lines = csvContent.Split(LineSeparators, StringSplitOptions.RemoveEmptyEntries);
 
         if (lines.Length < 2)
         {
