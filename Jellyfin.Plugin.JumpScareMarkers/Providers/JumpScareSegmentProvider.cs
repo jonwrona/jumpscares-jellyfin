@@ -1,8 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using Jellyfin.Database.Implementations.Enums;
 using Jellyfin.Plugin.JumpScareMarkers.Models;
 using MediaBrowser.Controller.Entities;
 using MediaBrowser.Controller.MediaSegments;
@@ -26,6 +30,8 @@ public class JumpScareSegmentProvider : IMediaSegmentProvider
     public JumpScareSegmentProvider(ILogger<JumpScareSegmentProvider> logger)
     {
         _logger = logger;
+        var buildTime = GetBuildTimestamp();
+        _logger.LogInformation("JumpScareSegmentProvider initialized - Build: {BuildTime}", buildTime);
     }
 
     /// <inheritdoc />
@@ -34,8 +40,12 @@ public class JumpScareSegmentProvider : IMediaSegmentProvider
     /// <inheritdoc />
     public ValueTask<bool> Supports(BaseItem item)
     {
+        ArgumentNullException.ThrowIfNull(item);
+
         // Support all video items (Movies, Episodes, etc.)
-        return ValueTask.FromResult(item is Video);
+        var isVideo = item is Video;
+        _logger.LogDebug("Supports check for item {ItemId} ({ItemName}): {IsVideo}", item.Id, item.Name, isVideo);
+        return ValueTask.FromResult(isVideo);
     }
 
     /// <inheritdoc />
@@ -43,6 +53,8 @@ public class JumpScareSegmentProvider : IMediaSegmentProvider
         MediaSegmentGenerationRequest request,
         CancellationToken cancellationToken)
     {
+        ArgumentNullException.ThrowIfNull(request);
+
         var plugin = Plugin.Instance;
         if (plugin == null)
         {
@@ -68,7 +80,7 @@ public class JumpScareSegmentProvider : IMediaSegmentProvider
             return Task.FromResult<IReadOnlyList<MediaSegmentDto>>(Array.Empty<MediaSegmentDto>());
         }
 
-        _logger.LogInformation("Found {Count} jump scares for item {ItemId}", jumpScares.Count, request.ItemId);
+        _logger.LogDebug("Found {Count} jump scares for item {ItemId}", jumpScares.Count, request.ItemId);
 
         // Convert jump scares to media segments
         var segments = new List<MediaSegmentDto>();
@@ -85,7 +97,21 @@ public class JumpScareSegmentProvider : IMediaSegmentProvider
             }
         }
 
-        _logger.LogInformation("Created {Count} segments for item {ItemId}", segments.Count, request.ItemId);
+        _logger.LogDebug("Created {Count} segments for item {ItemId}", segments.Count, request.ItemId);
+
+        // Log each segment for debugging
+        foreach (var segment in segments)
+        {
+            _logger.LogDebug(
+                "Segment details: Id={Id}, Type={Type}, Start={Start}ms, End={End}ms, ItemId={ItemId}",
+                segment.Id,
+                segment.Type,
+                segment.StartTicks / (TimeHelpers.TicksPerSecond / 1000),
+                segment.EndTicks / (TimeHelpers.TicksPerSecond / 1000),
+                segment.ItemId);
+        }
+
+        _logger.LogDebug("Returning {Count} segments to MediaSegmentManager", segments.Count);
         return Task.FromResult<IReadOnlyList<MediaSegmentDto>>(segments);
     }
 
@@ -123,9 +149,29 @@ public class JumpScareSegmentProvider : IMediaSegmentProvider
 
         return new MediaSegmentDto
         {
+            Id = Guid.NewGuid(),
             ItemId = jumpScare.ItemId,
+            Type = MediaSegmentType.Commercial,
             StartTicks = startTicks,
             EndTicks = endTicks
         };
+    }
+
+    /// <summary>
+    /// Gets the build timestamp from the assembly file.
+    /// </summary>
+    /// <returns>The build timestamp in UTC.</returns>
+    private static string GetBuildTimestamp()
+    {
+        try
+        {
+            var assembly = Assembly.GetExecutingAssembly();
+            var fileInfo = new FileInfo(assembly.Location);
+            return fileInfo.LastWriteTimeUtc.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture) + " UTC";
+        }
+        catch
+        {
+            return "Unknown";
+        }
     }
 }
